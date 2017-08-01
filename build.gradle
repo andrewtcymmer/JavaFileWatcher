@@ -1,0 +1,62 @@
+group 'com.github.andrewtcymmer.java.filewatcher'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = '1.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+mainClassName = "com.github.andrewtcymmer.javafilewatcher.Main"
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    jbehave
+}
+
+dependencies {
+    compile (
+            [group: 'org.springframework', name: 'spring-core', version: '4.3.8.RELEASE'],
+            [group: 'org.springframework', name: 'spring-context', version: '4.3.8.RELEASE']
+    )
+
+    testCompile (
+            [group: 'junit', name: 'junit', version: '4.12'],
+            [group: 'org.jbehave', name:'jbehave-core', version: '4.+'],
+            [group: 'de.codecentric', name:'jbehave-junit-runner', version:'1.0.1']
+    )
+}
+
+test {
+    onlyIf { false }  // use a different task for behavior tests
+}
+
+task bddTests(type: Test) {
+    ignoreFailures = true
+    doFirst {
+        file('target').mkdirs()
+    }
+
+    doLast {
+        file('target').delete()
+    }
+}
+
+task makedist(type: Jar) {
+    manifest {
+        //noinspection GroovyAssignabilityCheck
+        attributes 'Implementation-Title': 'Java File Watcher',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+
+    }
+
+    baseName = project.name + '-all'
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}

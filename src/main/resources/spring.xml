@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!-- =============================================================================================================== -->
+    <bean id="application" class="com.github.andrewtcymmer.javafilewatcher.FileWatcherApplication">
+        <constructor-arg ref="JavaNioFileWatcher" />
+        <constructor-arg ref="Validator" />
+    </bean>
+
+    <bean id="JavaNioFileWatcher" class="com.github.andrewtcymmer.javafilewatcher.JavaNioFileWatcher">
+        <property name="inputDirectory" value="etc/input" />
+        <property name="outputDirectory" value="etc/output" />
+        <property name="errorDirectory" value="etc/error" />
+    </bean>
+
+    <bean id="Validator" class="com.github.andrewtcymmer.javafilewatcher.CsvLineValidator" />
+
+<!-- =============================================================================================================== -->
+</beans>
