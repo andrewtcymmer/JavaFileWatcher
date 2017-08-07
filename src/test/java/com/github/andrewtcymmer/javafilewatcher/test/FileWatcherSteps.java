@@ -1,7 +1,7 @@
 package com.github.andrewtcymmer.javafilewatcher.test;
 
 import com.github.andrewtcymmer.javafilewatcher.*;
-import org.jbehave.core.annotations.*;
+import net.thucydides.core.annotations.Step;
 import org.junit.Assert;
 
 import java.io.File;
@@ -19,7 +19,6 @@ public class FileWatcherSteps {
     private IFileWatcher actualFileWatcher;
     private AbstractValidator actualValidator;
 
-    @BeforeScenario
     public void beforeEveryScenario() {
         System.out.println("Before Scenario");
         actualFileWatcher = new JavaNioFileWatcher();
@@ -35,7 +34,6 @@ public class FileWatcherSteps {
     }
 
     // technically un-necessary, but added just to be extra tidy, leave no trace after tests finish
-    @AfterScenario
     public void afterEveryScenario() {
         System.out.println("After Scenario");
         applicationThread.issueStop();
@@ -45,35 +43,35 @@ public class FileWatcherSteps {
         deleteAllFilesInDirectory(actualFileWatcher.getErrorDirectory());
     }
 
-    @Given("the application has started")
+    @Step("the application has started")
     public void givenAStartingCondition() {
         applicationThread.start();
     }
 
-    @When("a csv file which contains at least one error is added to the input directory")
-    public void oneCsvContainingOneErrorCreatedInInputDir() {
+    @Step("a csv file which contains at least one error is added to the input directory")
+    public void whenOneCsvContainingOneErrorCreatedInInputDir() {
         if (!createFile(actualFileWatcher.getInputDirectory() + "/one-error.csv")) {
             Assert.fail("Unable to create file in input directory.");
         }
     }
 
-    @When("a csv file which contains at least one correct line is added to the input directory")
-    public void oneCsvContainingOneOrMoreCorrectLinesCreatedInInputDir() {
+    @Step("a csv file which contains at least one correct line is added to the input directory")
+    public void whenOneCsvContainingOneOrMoreCorrectLinesCreatedInInputDir() {
         if (!createFile(actualFileWatcher.getInputDirectory() + "/one-correct-record.csv")) {
             Assert.fail("Unable to create file in input directory.");
         }
     }
 
-    @Then("the error directory has at least one file in it")
-    public void errorDirectoryHasMoreThanOneFile() {
+    @Step("the error directory has at least one file in it")
+    public void thenErrorDirectoryHasMoreThanOneFile() {
         File errorDir = new File(actualFileWatcher.getErrorDirectory());
         if (errorDir.list().length == 0) {
             Assert.fail("Number of files in the error directory is zero when it should be 1 or more.");
         }
     }
 
-    @Then("the output directory has at least one file in it")
-    public void outputDirectoryHasAtLeastOneFileInIt() {
+    @Step("the output directory has at least one file in it")
+    public void thenOutputDirectoryHasAtLeastOneFileInIt() {
         File outputDir = new File(actualFileWatcher.getOutputDirectory());
         if (outputDir.list().length == 0) {
             //Assert.fail("Number of files in the output directory is zero when it should be 1 or more.");

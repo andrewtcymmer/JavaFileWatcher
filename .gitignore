@@ -21,3 +21,6 @@ lib/
 # Note that .gradle (dot-gradle) is ignored but the gradle dir (without dot) is kept, in order for the wrapper to work.
 .gradle/
 build/
+
+# Serenity makes this.
+target/

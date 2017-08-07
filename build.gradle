@@ -1,21 +1,29 @@
 group 'com.github.andrewtcymmer.java.filewatcher'
 version '1.0'
 
-apply plugin: 'java'
-apply plugin: 'application'
-
-version = '1.0'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-mainClassName = "com.github.andrewtcymmer.javafilewatcher.Main"
-
 repositories {
     mavenCentral()
 }
 
-configurations {
-    jbehave
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    // adds the serenity plugin to Gradle's build path
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:1.5.3")
+    }
 }
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'   // adds aggregate and check tasks to Gradle build
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+mainClassName = "com.github.andrewtcymmer.javafilewatcher.Main"
 
 dependencies {
     compile (
@@ -24,39 +32,13 @@ dependencies {
     )
 
     testCompile (
+            [group: 'net.serenity-bdd', name: 'serenity-core', version: '1.5.3'],
+            [group: 'net.serenity-bdd', name: 'serenity-junit', version: '1.5.3'],
             [group: 'junit', name: 'junit', version: '4.12'],
-            [group: 'org.jbehave', name:'jbehave-core', version: '4.+'],
-            [group: 'de.codecentric', name:'jbehave-junit-runner', version:'1.0.1']
+            [group: 'org.assertj', name: 'assertj-core', version: '1.7.0'],
+            [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.7']
     )
 }
 
-test {
-    onlyIf { false }  // use a different task for behavior tests
-}
-
-task bddTests(type: Test) {
-    ignoreFailures = true
-    doFirst {
-        file('target').mkdirs()
-    }
-
-    doLast {
-        file('target').delete()
-    }
-}
-
-task makedist(type: Jar) {
-    manifest {
-        //noinspection GroovyAssignabilityCheck
-        attributes 'Implementation-Title': 'Java File Watcher',
-                'Implementation-Version': version,
-                'Main-Class': mainClassName
-
-    }
-
-    baseName = project.name + '-all'
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    with jar
-}
+// ensures the Gradle build does not stop if a test fails. Goes on to generate reports.
+gradle.startParameter.continueOnFailure = true
